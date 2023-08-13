@@ -1,4 +1,5 @@
 import React from "react";
+import Cookies from 'js-cookie';
 import { Link } from "react-router-dom";
 import axios from "axios";
 
@@ -17,7 +18,7 @@ import {
   InputGroupText,
   InputGroup,
   Container,
-  Row
+  Row,
 } from "reactstrap";
 
 // core components
@@ -40,17 +41,22 @@ function SignUp() {
       password: password,
       email: email,
     };
-    try {
-      const response = await axios.post(`${instance}/signup`, data);
 
-      const { user_name, token } = response.data;
+    try {
+      const response = await instance.post(`/signup`, data);
+      
+      const { username } = response.data.user;
+      const { token } = response.data
+      console.log(username, token);
+      Cookies.set('username', username);
+      Cookies.set('token', token);
 
       console.log(response);
-
+      window.location.href = '/';
     } catch (error) {
       console.error("Произошла ошибка при отправке данных:", error);
     }
-  }
+  };
   return (
     <>
       <div
@@ -59,7 +65,7 @@ function SignUp() {
           backgroundImage: "url(" + require("assets/img/bg11.jpg") + ")",
           backgroundSize: "cover",
           backgroundPosition: "top center",
-          minHeight: "100vh"
+          minHeight: "100vh",
         }}
       >
         <Container>
@@ -105,7 +111,7 @@ function SignUp() {
                       placeholder="Password..."
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      type="text"
+                      type="password"
                       onFocus={() => setLastFocus(true)}
                       onBlur={() => setLastFocus(false)}
                     ></Input>
@@ -132,10 +138,11 @@ function SignUp() {
                 </CardBody>
                 <CardFooter className="text-center">
                   <Button
+                    type="button"
                     className="btn-neutral btn-round"
                     color="info"
                     href="#pablo"
-                    onClick={(e) => e.preventDefault(handleSubmit)}
+                    onClick={handleSubmit}
                     size="lg"
                   >
                     Get Started

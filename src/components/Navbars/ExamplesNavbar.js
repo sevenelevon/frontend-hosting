@@ -53,7 +53,7 @@ function ExamplesNavbar() {
         <Container>
           <div className="navbar-translate">
             <NavbarBrand
-              href="http://213.219.212.198:3000/"
+              href="/"
               target="_blank"
               id="navbar-brand"
             >

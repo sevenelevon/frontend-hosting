@@ -1,6 +1,9 @@
-import { link } from "config/link";
 import React from "react";
 import { Link } from "react-router-dom";
+import Cookies from 'js-cookie';
+
+import { link } from "config/link";
+
 // reactstrap components
 import {
   Button,
@@ -40,6 +43,9 @@ function IndexNavbar() {
       window.removeEventListener("scroll", updateNavbarColor);
     };
   });
+
+  const username = Cookies.get("username");
+
   return (
     <>
       {collapseOpen ? (
@@ -54,12 +60,7 @@ function IndexNavbar() {
       <Navbar className={"fixed-top " + navbarColor} expand="lg" color="info">
         <Container>
           <div className="navbar-translate">
-            <NavbarBrand
-              to="/"
-              tag={Link}
-              target="_blank"
-              id="navbar-brand"
-            >
+            <NavbarBrand to="/" tag={Link} target="_blank" id="navbar-brand">
               Hosting-Service
             </NavbarBrand>
             <UncontrolledTooltip target="#navbar-brand">
@@ -118,16 +119,29 @@ function IndexNavbar() {
                 </DropdownMenu>
               </UncontrolledDropdown>
               <NavItem>
-                <Button
-                  className="nav-link btn-neutral"
-                  color="info"
-                  href={`${link}Signin-In`}
-                  id="upgrade-to-pro"
-                  target="_blank"
-                >
-                  <i className="now-ui-icons arrows-1_share-66 mr-1"></i>
-                  <p>Sign UP</p>
-                </Button>
+                {username ? (
+                  <Button
+                    className="nav-link btn-neutral"
+                    color="info"
+                    // href={`/Signin-In`}
+                    id="upgrade-to-pro"
+                    target="_blank"
+                  >
+                    <i className="fa fa-user-circle" style={{marginRight: "10px"}}></i>
+                    <p> you {username}</p>
+                  </Button>
+                ) : (
+                  <Button
+                    className="nav-link btn-neutral"
+                    color="info"
+                    href={`/Signin-In`}
+                    id="upgrade-to-pro"
+                    target="_blank"
+                  >
+                    <i className="now-ui-icons arrows-1_share-66 mr-1"></i>
+                    <p>Sign UP</p>
+                  </Button>
+                )}
               </NavItem>
               <NavItem>
                 <NavLink

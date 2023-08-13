@@ -1,5 +1,8 @@
 import React from "react";
+import Cookies from "js-cookie";
+import axios from "axios";
 
+import { instance } from "config/axios";
 // reactstrap components
 import {
   Button,
@@ -13,7 +16,8 @@ import {
   InputGroupText,
   InputGroup,
   Container,
-  Col
+  Col,
+  Alert,
 } from "reactstrap";
 
 // core components
@@ -24,6 +28,12 @@ import { Link } from "react-router-dom";
 function LoginPage() {
   const [firstFocus, setFirstFocus] = React.useState(false);
   const [lastFocus, setLastFocus] = React.useState(false);
+
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
+
+  const [error, setError] = React.useState(false);
+
   React.useEffect(() => {
     document.body.classList.add("login-page");
     document.body.classList.add("sidebar-collapse");
@@ -35,6 +45,33 @@ function LoginPage() {
       document.body.classList.remove("sidebar-collapse");
     };
   }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Создаем объект с данными для отправки
+    const data = {
+      username: username,
+      password: password,
+    };
+
+    try {
+      const response = await instance.post(`/login`, data);
+
+      const { username } = response.data.user;
+      const { token } = response.data;
+      console.log(username, token);
+      Cookies.set("username", username);
+      Cookies.set("token", token);
+
+      console.log(response);
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Произошла ошибка при отправке данных:", error);
+      setError(true);
+    }
+  };
+
   return (
     <>
       <ExamplesNavbar />
@@ -42,10 +79,28 @@ function LoginPage() {
         <div
           className="page-header-image"
           style={{
-            backgroundImage: "url(" + require("assets/img/login.jpg") + ")"
+            backgroundImage: "url(" + require("assets/img/login.jpg") + ")",
           }}
         ></div>
         <div className="content">
+          <Alert color="danger" isOpen={error}>
+            <Container>
+              <div className="alert-icon">
+                <i className="now-ui-icons objects_support-17"></i>
+              </div>
+              <strong>Username or passwords are incorrect!</strong> or create an account.
+              <button
+                type="button"
+                className="close"
+                onClick={() => setError(false)}
+              >
+                <span aria-hidden="true">
+                  <i className="now-ui-icons ui-1_simple-remove"></i>
+                </span>
+              </button>
+            </Container>
+          </Alert>
+
           <Container>
             <Col className="ml-auto mr-auto" md="4">
               <Card className="card-login card-plain">
@@ -71,8 +126,10 @@ function LoginPage() {
                         </InputGroupText>
                       </InputGroupAddon>
                       <Input
-                        placeholder="First Name..."
+                        placeholder="UserName..."
                         type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                         onFocus={() => setFirstFocus(true)}
                         onBlur={() => setFirstFocus(false)}
                       ></Input>
@@ -89,8 +146,10 @@ function LoginPage() {
                         </InputGroupText>
                       </InputGroupAddon>
                       <Input
-                        placeholder="Last Name..."
-                        type="text"
+                        placeholder="Password..."
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        type="password"
                         onFocus={() => setLastFocus(true)}
                         onBlur={() => setLastFocus(false)}
                       ></Input>
@@ -99,20 +158,18 @@ function LoginPage() {
                   <CardFooter className="text-center">
                     <Button
                       block
+                      type="button"
                       className="btn-round"
                       color="info"
                       href="#pablo"
-                      onClick={(e) => e.preventDefault()}
+                      onClick={handleSubmit}
                       size="lg"
                     >
                       Get Started
                     </Button>
                     <div className="pull-left">
                       <h6>
-                        <Link
-                          className="link"
-                          to="/Signin-Up"
-                        >
+                        <Link className="link" to="/Signin-Up">
                           Create Account
                         </Link>
                       </h6>

@@ -19,6 +19,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 
+import Cookies from 'js-cookie';
+
 // styles for this kit
 import "assets/css/bootstrap.min.css";
 import "assets/scss/now-ui-kit.scss?v=1.5.0";
@@ -35,6 +37,7 @@ import All_VPS from "views/examples/All_VPS";
 import CreateVps from "views/examples/CreateVps";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+const isAuthenticated = !!Cookies.get('token'); // Проверяем, есть ли токен
 
 root.render(
   <BrowserRouter>
@@ -45,7 +48,9 @@ root.render(
       <Route path="/profile-page" element={<ProfilePage />} />
       <Route path="/Signin-In" element={<LoginPage />} />
       <Route path="/Signin-Up" element={<LoginSignUp />} />
-      <Route path="/vps" element={<All_VPS />} />
+      {/* <Route path="/vps" element={<All_VPS />} /> */}
+      
+      <Route path="/vps" element={isAuthenticated ? <All_VPS /> : <Navigate to="/Signin-In" />}/>
       <Route path="/create-vps" element={<CreateVps />} />
 
       <Route path="*" element={<Navigate to="/index" replace />} />
